@@ -1,0 +1,70 @@
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import BannerSlider from './BannerSlider'
+import TopFeaturesBar from './TopFeaturesBar'
+import ProductGrid from './ProductGrid'
+import IngredientsSpotlight from './IngredientsSpotlight'
+import FeaturedProductSection from './FeaturedProductSection'
+import BestSellers from './BestSellers'
+import Testimonials from './Testimonials'
+import ImageFeed from './ImageFeed'
+import New from './New'
+// import SourcingTimeline from './SourcingTimeline'
+import SkinQuiz from './SkinQuiz'
+import ClinicalStudy from './ClinicalStudy'
+
+interface HomeProps {
+  onAddToCart: (product: { id: number; name: string; price: number; img: string }, openCart?: boolean) => void
+}
+
+export default function Home({ onAddToCart }: HomeProps) {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.querySelector(location.hash)
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
+      }
+    }
+  }, [location])
+
+  return (
+    <main>
+      {/* Auto-advancing promotional banner carousel (Hero Section) */}
+      <BannerSlider />
+
+      {/* Top Features Strip (Cash on Delivery, Free Delivery, 100% Authentic, 7 Days Replacement, 100% Safe Payments) */}
+      <TopFeaturesBar />
+
+      {/* Interactive Ingredients Spotlight */}
+      <IngredientsSpotlight />
+
+      {/* <OurStory /> */}
+      <New />
+
+      {/* Product Section: Displays 4 products (expandable) */}
+      <ProductGrid onAddToCart={onAddToCart} />
+
+      {/* Interactive Skin Quiz / Routine Builder */}
+      <SkinQuiz onAddToCart={onAddToCart} />
+
+      {/* Best Seller Section: Split layout carousel and image */}
+      <BestSellers onAddToCart={onAddToCart} />
+
+      {/* Clinical Study Results & Efficacy */}
+      <ClinicalStudy />
+
+      {/* Parallax Featured Products Section */}
+      <FeaturedProductSection />
+
+      {/* Testimonials 4-card grid layout */}
+      <Testimonials onAddToCart={onAddToCart} />
+
+      {/* Lifestyle image feed carousel */}
+      <ImageFeed />
+    </main>
+  )
+}

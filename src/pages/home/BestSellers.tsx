@@ -1,0 +1,136 @@
+import { useState } from 'react'
+import { PRODUCTS } from './productsData'
+import type { Product } from './productsData'
+import { useLanguage } from '../../context/LanguageContext'
+
+interface BestSellersProps {
+  onAddToCart: (product: { id: number; name: string; price: number; img: string }) => void
+}
+
+const BEST_SELLERS: Product[] = PRODUCTS.filter(p => [1, 9, 10].includes(p.id))
+
+export default function BestSellers({ onAddToCart }: BestSellersProps) {
+  const { t } = useLanguage()
+  const [startIndex, setStartIndex] = useState(0)
+
+  const handleNext = () => {
+    setStartIndex((prev) => (prev + 1) % (BEST_SELLERS.length - 1))
+  }
+
+  const handlePrev = () => {
+    setStartIndex((prev) => (prev - 1 + (BEST_SELLERS.length - 1)) % (BEST_SELLERS.length - 1))
+  }
+
+  return (
+    <section id="bestsellers" className="py-14 bg-brand-cream text-brand-dark overflow-hidden border-b border-brand-dark/5">
+      <div className="max-w-7xl mx-auto px-6 lg:px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+          {/* LEFT SIDE: Best Sellers Carousel */}
+          <div className="lg:col-span-6 flex flex-col">
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <span className="text-xs font-bold tracking-widest text-[#184433] uppercase">{t('sec_cust_favs')}</span>
+                <h2 className="font-serif text-4xl sm:text-5xl font-normal mt-2 leading-tight text-[#184433]">{t('sec_bestsellers')}</h2>
+              </div>
+              <div className="flex items-center gap-6">
+                {/* Left Arrow Button */}
+                <button
+                  onClick={handlePrev}
+                  className="w-12 h-12 rounded-full border border-brand-dark/20 flex items-center justify-center text-brand-dark hover:bg-[#184433] hover:text-white hover:border-[#184433] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                  aria-label="Scroll left"
+                >
+                  <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                {/* Right Arrow Button */}
+                <button
+                  onClick={handleNext}
+                  className="w-12 h-12 rounded-full border border-brand-dark/20 flex items-center justify-center text-brand-dark hover:bg-[#184433] hover:text-white hover:border-[#184433] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                  aria-label="Scroll right"
+                >
+                  <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Sliding Product list */}
+            <div className="relative animate-fade-in">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 transition-all duration-500">
+                {BEST_SELLERS.slice(startIndex, startIndex + 2).map((p) => {
+                  const translatedName = t('prod_' + p.id + '_name')
+                  return (
+                    <div
+                      key={p.id}
+                      className="group relative flex flex-col bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 border border-brand-dark/5  animate-scale-up"
+                    >
+                      <div className="relative aspect-4/4 w-full overflow-hidden bg-brand-cream-dark ">
+                        <img
+                          src={p.img}
+                          alt={translatedName}
+                          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                        <span className="absolute top-3 left-3 bg-[#184433] text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs">
+                          {p.rating}★ Rating
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col flex-1 mt-4 p-4">
+                        <p className="text-[10px] font-semibold text-brand-dark uppercase tracking-widest">{t('cat_' + p.category.toLowerCase())}</p>
+                        <h3 className="font-sans text-base font-normal text-brand-dark mt-1 leading-snug group-hover:text-brand-light transition-colors duration-200">
+                          {translatedName}
+                        </h3>
+
+                        <div className="flex items-center justify-between  mt-3 pt-3 border-t border-[#184433]/25">
+                          <span className="text-base font-bold text-[#184433]">${p.price.toFixed(2)}</span>
+                          <button
+                            onClick={() => onAddToCart({ id: p.id, name: translatedName, price: p.price, img: p.img })}
+                            className="group/btn flex items-center justify-center gap-0 hover:gap-1.5 px-3.5 py-2.5 bg-[#184433] hover:bg-[#1F4D3A] text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer active:scale-95"
+                          >
+                            <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <circle cx="9" cy="21" r="1" />
+                              <circle cx="20" cy="21" r="1" />
+                              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                            </svg>
+                            <span className="max-w-0 overflow-hidden opacity-0 group-hover/btn:max-w-[100px] group-hover/btn:opacity-100 transition-all duration-500 ease-in-out whitespace-nowrap">
+                              {t('btn_add_to_cart')}
+                            </span>
+                          </button>
+
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE: Static Image Showcase */}
+          <div className="lg:col-span-6 relative h-full rounded-xl overflow-hidden shadow-xl border border-brand-dark/10 group">
+            <img
+              src="https://thewoomag.com/backend/images/blogs/cover-45-Korean_Beauty_Skincare_Products[1].webp"
+              alt="Natural Skincare Ingredients"
+              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+            />
+            {/* Visual Glass Overlay */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent flex items-end p-6 sm:p-8">
+              <div className="text-white">
+                <span className="text-xs font-bold tracking-widest uppercase opacity-75">Clean Beauty</span>
+                <h3 className="font-serif text-3xl sm:text-4xl font-normal mt-2 leading-tight">{t('sec_natural_glow')}</h3>
+                <p className="text-sm mt-3 opacity-90 font-light max-w-sm">{t('sec_glow_desc')}</p>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  )
+}

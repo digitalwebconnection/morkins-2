@@ -1,0 +1,120 @@
+import { useState } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import PromoBar from './PromoBar'
+import Navbar from './Navbar'
+import Footer from './Footer'
+import Home from '../pages/home/Home'
+import AboutUs from '../pages/aboutus/AboutUs'
+import UserProfile from '../pages/profile/UserProfile'
+import ProductsPage from '../pages/products/ProductsPage'
+import ProductDetailsPage from '../pages/products/ProductDetailsPage'
+
+import CartDrawer from './CartDrawer'
+import type { CartItem } from './CartDrawer'
+import AuthModal from './AuthModal'
+
+export default function MainSection() {
+  const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [lastAddedItem, setLastAddedItem] = useState<CartItem | null>(null);
+  const [showCartPopover, setShowCartPopover] = useState(false);
+
+  const handleUserClick = () => {
+    const user = localStorage.getItem('morkins_logged_in_user');
+    if (user) {
+      navigate('/profile');
+    } else {
+      setIsAuthOpen(true);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('morkins_logged_in_user');
+    navigate('/');
+  };
+
+  const handleAddToCart = (product: { id: number; name: string; price: number; img: string }, openCart = false) => {
+    let finalQty = 1;
+    setCartItems(prevItems => {
+      const existing = prevItems.find(item => item.id === product.id);
+      if (existing) {
+        finalQty = existing.qty + 1;
+        return prevItems.map(item =>
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+        );
+      }
+      finalQty = 1;
+      return [...prevItems, { ...product, qty: 1 }];
+    });
+    setLastAddedItem({ ...product, qty: finalQty });
+    setShowCartPopover(true);
+    if (openCart) {
+      setIsCartOpen(true);
+    }
+  };
+
+  const handleUpdateQty = (id: number, delta: number) => {
+    setCartItems(prevItems =>
+      prevItems
+        .map(item => {
+          if (item.id === id) {
+            const nextQty = item.qty + delta;
+            return { ...item, qty: nextQty };
+          }
+          return item;
+        })
+        .filter(item => item.qty > 0)
+    );
+  };
+
+  const handleRemoveItem = (id: number) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+  };
+
+  const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+
+  return (
+    <>
+      {/* Announcements Promo Slider */}
+      <PromoBar />
+
+      <Navbar 
+        onCartClick={() => setIsCartOpen(true)} 
+        onUserClick={handleUserClick} 
+        cartCount={cartCount} 
+        lastAddedItem={lastAddedItem}
+        showCartPopover={showCartPopover}
+        onCloseCartPopover={() => setShowCartPopover(false)}
+      />
+
+      {/* Page Content */}
+      <Routes>
+        <Route path="/" element={<Home onAddToCart={handleAddToCart} />} />
+        <Route path="/products" element={<ProductsPage onAddToCart={handleAddToCart} />} />
+        <Route path="/products/:id" element={<ProductDetailsPage onAddToCart={handleAddToCart} />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/profile" element={<UserProfile onAddToCart={handleAddToCart} onLogout={handleLogout} />} />
+      </Routes>
+
+      {/* Page Footer */}
+      <Footer />
+
+      {/* Shopping Bag Slider Panel */}
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cartItems={cartItems}
+        onUpdateQty={handleUpdateQty}
+        onRemove={handleRemoveItem}
+      />
+
+      {/* User Authentication Modal Popup */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
+    </>
+  )
+}
