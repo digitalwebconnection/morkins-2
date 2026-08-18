@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import navbarLogo from '../assets/logo.png'
+import navbarLogo from '../assets/Morkins Final Logo.png'
 import { useLanguage } from '../context/LanguageContext'
 
 
@@ -27,7 +27,7 @@ export default function Footer() {
           {/* LEFT: Logo + Newsletter + Socials */}
           <div className="flex flex-col gap-6">
             <a href="/">
-              <img src={navbarLogo} alt="Morkins Logo" className="h-20 w-auto object-contain brightness-0 invert" />
+              <img src={navbarLogo} alt="Morkins Logo" className="h-25 w-auto object-contain brightness-0 invert" />
             </a>
             <p className="text-white/90 text-sm leading-relaxed max-w-60">
               {t('foot_mission')}
