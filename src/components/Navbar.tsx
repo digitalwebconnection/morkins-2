@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import navbarLogo from "../assets/Morkins Final Logo.png"
+import navbarLogo from "../assets/logo.png"
 import { useLanguage } from '../context/LanguageContext'
 
 interface NavbarProps {

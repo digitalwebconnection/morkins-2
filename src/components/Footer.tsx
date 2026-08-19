@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import navbarLogo from '../assets/Morkins Final Logo.png'
+import navbarLogo from '../assets/logo.png'
 import { useLanguage } from '../context/LanguageContext'
 
 
