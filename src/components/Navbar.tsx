@@ -66,7 +66,7 @@ export default function Navbar({
             <img
               src={navbarLogo}
               alt="Morkins Logo"
-              className="h-25  w-auto object-contain transition-transform duration-300 "
+              className="h-20  w-auto object-contain transition-transform duration-300 "
             />
           </Link>
         </div>
